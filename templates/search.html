@@ -1,0 +1,48 @@
+$def with (tiles, my_shows)
+<div class="body">
+<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
+
+<p><a href="/">&lt;&lt; Back</a></p>
+
+<h1> My shows </h1>
+<ul>
+$for i in my_shows:
+  $code:
+    removeurl = "/removefave?" + urllib.urlencode({'title': i})
+    searchurl = "/search?" + urllib.urlencode({'title': i})
+  <li>$i (<a href="$removeurl">remove</a> | <a href="$searchurl">List</a>)</li>
+</ul>
+
+<div class="searchdiv">
+
+$for i in tiles['my_shows']:
+  $code:
+    removeurl = "/removefave?" + urllib.urlencode({'title': i['title']})
+    searchurl = "/search?" + urllib.urlencode({'title': i['title']})
+  <p><strong>$i['title']</strong>
+  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a></p>
+  <ul>
+  $for ep in i['episodes']:
+    <li>Episode $ep['episode']
+    $for res,file in ep['files'].items():
+      <a href="$file['link']">$file['res']</a>
+    </li>
+  </ul>
+
+$for i in tiles['other']:
+  $code:
+    addurl = "/addfave?" + urllib.urlencode({'title': i['title']})
+    searchurl = "/search?" + urllib.urlencode({'title': i['title']})
+  <p><strong>$i['title']</strong>
+  <a href="$addurl">Add to My Shows</a> | <a href="$searchurl">List</a></p>
+  <ul>
+  $for ep in i['episodes']:
+    <li>Episode $ep['episode']
+    $for res,file in ep['files'].items():
+      <a href="$file['link']">$file['res']</a>
+    </li>
+  </ul>
+</div>
+
+</div>
+</div>

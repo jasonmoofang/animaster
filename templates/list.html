@@ -1,0 +1,26 @@
+$def with (eps, my_streams, title)
+<div class="body">
+<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
+
+<p><a href="/stream">&lt;&lt; Back</a></p>
+
+<div class="searchdiv">
+
+<p><strong>$title</strong></p>
+
+$if title in my_streams:
+  $code:
+    removeurl = "/removefavestream?" + urllib.urlencode({'title': title})
+  <p><a href="$removeurl">Remove from My Streams</a></p>
+$else:
+  $code:
+    addurl = "/addfavestream?" + urllib.urlencode({'title': title})
+  <p><a href="$addurl">Add to My Streams</a></p>
+
+$ epcount = 1
+$for ep in eps:
+  <a href="$ep">Episode $epcount</a><br />
+  $ epcount += 1
+
+</div>
+</div>

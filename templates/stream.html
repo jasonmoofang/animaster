@@ -1,0 +1,34 @@
+$def with (tiles, my_shows)
+<div class="body">
+<p><a href="/">Torrents</a> | Streams</p>
+
+<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
+
+<h1> My streams </h1>
+
+$for i in tiles['my_shows']:
+  $code:
+    removeurl = "/removefavestream?" + urllib.urlencode({'title': i['title']})
+    listurl = "/list?" + urllib.urlencode({'title': i['title'], 'ad_id': i['ad_id'] })
+  <div class="tile myshow_tile">
+  <p><strong>$i['title']</strong><br />
+  <a href="$removeurl">Remove from My Streams</a> | <a href="$listurl">List</a></p>
+  <p>
+  $ epnum = len(i['episodes'])
+  $while epnum > (len(i['episodes']) - 5):
+    <a href="$i['episodes'][epnum-1]">Episode $epnum</a><br />
+    $ epnum -= 1
+    $if epnum == 0:
+        $break
+  $if len(i['episodes']) > 5:
+    <center><a href="$listurl">..more</a></center>
+  </div>
+
+$for i in tiles['other']:
+  $code:
+    addurl = "/addfavestream?" + urllib.urlencode({'title': i['title']})
+    listurl = "/list?" + urllib.urlencode({'title': i['title'], 'ad_id': i['ad_id'] })
+  <div class="tile">
+  <p><strong>$i['title']</strong><br />
+  <a href="$addurl">Add to My Streams</a> | <a href="$listurl">List</a></p>
+  </div>

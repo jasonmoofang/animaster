@@ -1,0 +1,53 @@
+$def with (tiles, my_shows)
+<div class="body">
+<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
+
+<p>Torrents | <a href="/stream">Streams</a></p>
+
+<h1> My shows </h1>
+<ul>
+$for i in my_shows:
+  $code:
+    removeurl = "/removefave?" + urllib.urlencode({'title': i})
+    searchurl = "/search?" + urllib.urlencode({'title': i})
+  <li>$i (<a href="$removeurl">remove</a> | <a href="$searchurl">list</a>)</li>
+</ul>
+
+<div>
+<form action="/search" method="GET">
+Search: <input type="text" name="title" /><input type="submit" />
+</form>
+</div>
+
+$for i in tiles['my_shows']:
+  $code:
+    removeurl = "/removefave?" + urllib.urlencode({'title': i['title']})
+    searchurl = "/search?" + urllib.urlencode({'title': i['title']})
+  <div class="tile myshow_tile">
+  <p><strong>$i['title']</strong><br />
+  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a></p>
+  <ul>
+  $for ep in i['episodes']:
+    <li>Episode $ep['episode']
+    $for res,file in ep['files'].items():
+      <a href="$file['link']">$file['res']</a>
+    </li>
+  </ul>
+  </div>
+
+$for i in tiles['other']:
+  $code:
+    addurl = "/addfave?" + urllib.urlencode({'title': i['title']})
+    searchurl = "/search?" + urllib.urlencode({'title': i['title']})
+  <div class="tile">
+  <p><strong>$i['title']</strong><br />
+  <a href="$addurl">Add to My Shows</a> | <a href="$searchurl">List</a></p>
+  <ul>
+  $for ep in i['episodes']:
+    <li>Episode $ep['episode']
+    $for res,file in ep['files'].items():
+      <a href="$file['link']">$file['res']</a>
+    </li>
+  </ul>
+  </div>
+</div>
