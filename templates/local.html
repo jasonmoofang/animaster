@@ -1,0 +1,20 @@
+$def with (files)
+<div class="body">
+<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
+
+<p><a href="/">Torrents</a> | <a href="/stream">Streams</a> | Local</p>
+
+<div class="searchdiv">
+
+$for show in files:
+  <h3>$show['title']</h3>
+  <ul>
+  $ epcount = 1
+  $while epcount <= int(show['max_episode']):
+    $if epcount in show['episodes'].keys():
+      $code:
+        playurl = "/play?" + urllib.urlencode({'path': show['episodes'][epcount]['path']})
+      <li><a href="$playurl" target="_blank">Episode $epcount</a></li>
+    $ epcount += 1
+  </ul>
+</div>

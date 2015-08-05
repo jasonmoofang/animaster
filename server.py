@@ -4,6 +4,8 @@ import re
 import urllib
 import requests
 import json
+import os
+import subprocess
 
 urls = (
     '/', 'index',
@@ -15,6 +17,8 @@ urls = (
     '/stream', 'stream',
     '/list', 'list',
     '/test', 'test',
+    '/local', 'local',
+    '/play', 'play',
 )
 
 def process_filename (name):
@@ -156,6 +160,27 @@ def get_daisuki_episodes (ad_id):
                 break
     return episodes
 
+def get_files_from (folder):
+    relevant_path = folder
+    included_extenstions = ['mkv','avi','mp4','mpg' ] ;
+    file_names = [fn for fn in os.listdir(relevant_path) if any([fn.endswith(ext) for ext in included_extenstions])];
+    ret = []
+    for f in file_names:
+        info = process_filename(f)
+        if info:
+            info['path'] = folder+'/'+f
+            added = False
+            for s in ret:
+                if s['title'] == info['title']:
+                    s['episodes'][int(info['episode'])] = info
+                    if s['max_episode'] < info['episode']:
+                        s['max_episode'] = info['episode']
+                    added = True
+                    break
+            if not added:
+                ret.append({ 'title': info['title'], 'max_episode': info['episode'], 'episodes': { int(info['episode']): info } })
+    return ret
+
 render = web.template.render('templates/', globals={'urllib': urllib})
 
 class index:
@@ -216,6 +241,18 @@ class list:
         my_streams = get_my_streams()
         eps = get_daisuki_episodes(param.ad_id)
         return render.list(eps, my_streams, param.title)
+
+class local:
+    def GET(self):
+        files = get_files_from('/home/lim/Videos')
+        return render.local(files)
+
+class play:
+    def GET(self):
+        param = web.input(path=None)
+        print "/usr/bin/smplayer '"+param.path+"'"
+        subprocess.Popen(["/usr/bin/smplayer", param.path])
+        return "<script> window.close(); </script>"
 
 class test:
     def GET(self):
