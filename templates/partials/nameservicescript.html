@@ -1,0 +1,36 @@
+$def with (nameserviceurl, count)
+  <script>
+      jQuery(document).ready(function() {
+          jQuery.ajax({
+            url: "$nameserviceurl"
+          }).done(function(data) {
+            data = JSON.parse(data);
+            if (data.status == "ok") {
+              if (data.data.banner) {
+                jQuery('#banner$count').html('<img src="' + data.data.banner + '" width="100%" />');
+              }
+              jQuery('#synopsislink$count').click(function() {
+                jQuery('#dialogdiv').html((data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                jQuery('#dialogdiv').dialog({
+                    modal: true,
+                    title: "Synopsis",
+                    width: 600,
+                    position: {
+                    my: "center top",
+                    at: "center top",
+                    of: window,
+                    collision: "none"
+                    },
+                    create: function (event, ui) {
+                      jQuery(event.target).parent().css('position', 'fixed');
+                    },
+                    buttons: {
+                      Ok: function() {
+                        jQuery( this ).dialog( "close" );
+                      }
+                    }   });
+              });
+            }
+          });
+      });
+  </script>

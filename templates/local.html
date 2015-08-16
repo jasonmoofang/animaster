@@ -1,13 +1,16 @@
 $def with (files)
-<div class="body">
-<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
-
-<p><a href="/">Torrents</a> | <a href="/stream">Streams</a> | Local</p>
 
 <div class="searchdiv">
 
+$ count = 0
 $for show in files:
+  $code:
+    count += 1
+    nameserviceurl = "/nameservice/series?" + urllib.urlencode({'title': show['title']})
+
+  <div id="banner$count" class="banner"></div>
   <h3>$show['title']</h3>
+  <p><a href="#" onclick="return false;" id="synopsislink$count">Synopsis</a></p>
   <ul>
   $ epcount = 1
   $while epcount <= int(show['max_episode']):
@@ -17,4 +20,5 @@ $for show in files:
       <li><a href="$playurl" target="_blank">Episode $epcount</a></li>
     $ epcount += 1
   </ul>
+  $:partial_render.nameservicescript(nameserviceurl, count)
 </div>

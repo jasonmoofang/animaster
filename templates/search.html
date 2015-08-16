@@ -1,6 +1,4 @@
 $def with (tiles, my_shows)
-<div class="body">
-<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
 
 <p><a href="/">&lt;&lt; Back</a></p>
 
@@ -15,12 +13,16 @@ $for i in my_shows:
 
 <div class="searchdiv">
 
+$ count = 0
 $for i in tiles['my_shows']:
   $code:
+    count += 1
     removeurl = "/removefave?" + urllib.urlencode({'title': i['title']})
     searchurl = "/search?" + urllib.urlencode({'title': i['title']})
+    nameserviceurl = "/nameservice/series?" + urllib.urlencode({'title': i['title']})
   <p><strong>$i['title']</strong>
-  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a></p>
+  <div id="banner$count" class="banner"></div>
+  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Synopsis</a></p>
   <ul>
   $for ep in i['episodes']:
     <li>Episode $ep['episode']
@@ -28,6 +30,7 @@ $for i in tiles['my_shows']:
       <a href="$file['link']">$file['res']</a>
     </li>
   </ul>
+  $:partial_render.nameservicescript(nameserviceurl, count)
 
 $for i in tiles['other']:
   $code:

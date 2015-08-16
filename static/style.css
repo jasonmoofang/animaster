@@ -3,7 +3,7 @@ div.tile {
     width: 400px;
     margin: 3px;
     padding: 5px;
-    height: 210px;
+    height: 250px;
     overflow: auto;
     background-color: #ffa;
 }
@@ -20,4 +20,12 @@ div.searchdiv {
 div.body {
     width: 850px;
     margin: auto;
+}
+
+div.banner {
+    width: 100%;
+}
+
+.ui-tooltip {
+ white-space: pre-line;
 }

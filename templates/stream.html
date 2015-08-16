@@ -1,18 +1,18 @@
 $def with (tiles, my_shows)
-<div class="body">
-<p><a href="/">Torrents</a> | Streams | <a href="/local">Local</a></p>
-
-<link rel="stylesheet" href="static/style.css" type="text/css" media="screen" charset="utf-8"/>
 
 <h1> My streams </h1>
 
+$ count = 0
 $for i in tiles['my_shows']:
   $code:
+    count += 1
     removeurl = "/removefavestream?" + urllib.urlencode({'title': i['title']})
     listurl = "/list?" + urllib.urlencode({'title': i['title'], 'ad_id': i['ad_id'] })
+    nameserviceurl = "/nameservice/series?" + urllib.urlencode({'title': i['title']})
   <div class="tile myshow_tile">
+  <div id="banner$count" class="banner"></div>
   <p><strong>$i['title']</strong><br />
-  <a href="$removeurl">Remove from My Streams</a> | <a href="$listurl">List</a></p>
+  <a href="$removeurl">Remove from My Streams</a> | <a href="$listurl">List</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Synopsis</a></p>
   <p>
   $ epnum = len(i['episodes'])
   $while epnum > (len(i['episodes']) - 5):
@@ -23,6 +23,7 @@ $for i in tiles['my_shows']:
   $if len(i['episodes']) > 5:
     <center><a href="$listurl">..more</a></center>
   </div>
+  $:partial_render.nameservicescript(nameserviceurl, count)
 
 $for i in tiles['other']:
   $code:
