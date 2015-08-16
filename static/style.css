@@ -26,6 +26,11 @@ div.banner {
     width: 100%;
 }
 
+div.synopsis {
+    max-height: 200px;
+    overflow: auto;
+}
+
 .ui-tooltip {
  white-space: pre-line;
 }

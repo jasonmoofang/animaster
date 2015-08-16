@@ -117,6 +117,20 @@ class nameservice:
                     except (tvdb_api.tvdb_shownotfound, tvdb_api.tvdb_seasonnotfound, tvdb_api.tvdb_episodenotfound) as err: 
                         continue
                 return json.dumps({'status': 'notfound'})
+        elif endpoint == "episode" and hasattr(param, 'seriesname') and hasattr(param, 'seasonnum') and hasattr(param, 'epnum'):
+            try:
+                curseason = int(param.seasonnum)
+                curep = int(param.epnum)
+                seasonepcount = len(t[param.seriesname][curseason].keys())
+                while curep > seasonepcount:
+                    curseason += 1
+                    curep -= seasonepcount
+                    seasonepcount = len(t[param.seriesname][curseason].keys())
+                return json.dumps({'status': 'ok', 'data': t[param.seriesname][curseason][curep] })
+            except (tvdb_api.tvdb_shownotfound, tvdb_api.tvdb_seasonnotfound, tvdb_api.tvdb_episodenotfound) as err: 
+                return json.dumps({'status': 'notfound'})
+        else:
+            return json.dumps({'status': 'error', 'errormsg': 'invalid endpoint' })
             
 
 class test:

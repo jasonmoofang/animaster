@@ -22,7 +22,9 @@ $else:
 
 $ epcount = 1
 $for ep in eps:
-  <a href="$ep">Episode $epcount</a><br />
+  <a href="$ep">Episode $epcount</a>
+  <a href="#" class="series$count" data-seriesnamecoded="" data-seasonnum=""
+      onclick="fetch_ep(jQuery(this).data('seriesnamecoded'), jQuery(this).data('seasonnum'), $epcount); return false;">Fetch info</a><br />
   $ epcount += 1
 
 </div>

@@ -28,6 +28,8 @@ $for i in tiles['my_shows']:
     <li>Episode $ep['episode']
     $for res,file in ep['files'].items():
       <a href="$file['link']">$file['res']</a>
+    <a href="#" class="series$count" data-seriesnamecoded="" data-seasonnum=""
+        onclick="fetch_ep(jQuery(this).data('seriesnamecoded'), jQuery(this).data('seasonnum'), $ep['episode']); return false;">Fetch info</a>
     </li>
   </ul>
   $:partial_render.nameservicescript(nameserviceurl, count)

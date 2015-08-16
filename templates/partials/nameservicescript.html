@@ -6,11 +6,22 @@ $def with (nameserviceurl, count)
           }).done(function(data) {
             data = JSON.parse(data);
             if (data.status == "ok") {
+              if (!data.data.overview) {
+                data.data.overview = "";
+              }
+              jQuery('.series$count').data('seriesnamecoded', encodeURIComponent(data.data.seriesname));
+              jQuery('.series$count').data('seasonnum', encodeURIComponent(data.season));
               if (data.data.banner) {
                 jQuery('#banner$count').html('<img src="' + data.data.banner + '" width="100%" />');
               }
               jQuery('#synopsislink$count').click(function() {
-                jQuery('#dialogdiv').html((data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />'));
+                var content = '<div class="synopsis">' + (data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />') + '</div>';
+                if (data.data.fanart) {
+                    content = '<center><img src="' + data.data.fanart + '" width="70%" /></center><br /><br />' + content;
+                } else if (data.data.banner) {
+                    content = '<img src="' + data.data.banner + '" width="100%" /><br /><br />' + content;
+                }
+                jQuery('#dialogdiv').html(content);
                 jQuery('#dialogdiv').dialog({
                     modal: true,
                     title: "Synopsis",
@@ -33,4 +44,43 @@ $def with (nameserviceurl, count)
             }
           });
       });
+      function fetch_ep(seriesnamecoded, seasonnum, epnum) {
+          jQuery.ajax({
+            url: "/nameservice/episode?seriesname=" + seriesnamecoded + "&seasonnum=" + seasonnum + "&epnum=" + epnum
+          }).done(function(data) {
+            data = JSON.parse(data);
+            if (data.status == "ok") {
+              console.log(data.data.overview);
+              if (!data.data.overview) {
+                data.data.overview = "";
+              }
+              var content = '<div class="synopsis">' + (data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />') + '</div>';
+              if (data.data.episodename) {
+                  content = '<strong>Episode name: ' + data.data.episodename + '</strong><br />' + content;
+              }
+              if (data.data.filename) {
+                  content = '<center><img src="' + data.data.filename + '" width="70%" /></center><br />' + content;
+              }
+              jQuery('#dialogdiv').html(content);
+              jQuery('#dialogdiv').dialog({
+                  modal: true,
+                  title: "Synopsis",
+                  width: 600,
+                  position: {
+                  my: "center top",
+                  at: "center top",
+                  of: window,
+                  collision: "none"
+                  },
+                  create: function (event, ui) {
+                    jQuery(event.target).parent().css('position', 'fixed');
+                  },
+                  buttons: {
+                    Ok: function() {
+                      jQuery( this ).dialog( "close" );
+                    }
+                  }   });
+            }
+          });
+      }
   </script>

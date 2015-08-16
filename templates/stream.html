@@ -16,7 +16,9 @@ $for i in tiles['my_shows']:
   <p>
   $ epnum = len(i['episodes'])
   $while epnum > (len(i['episodes']) - 5):
-    <a href="$i['episodes'][epnum-1]">Episode $epnum</a><br />
+    <a href="$i['episodes'][epnum-1]">Episode $epnum</a>
+    <a href="#" class="series$count" data-seriesnamecoded="" data-seasonnum=""
+        onclick="fetch_ep(jQuery(this).data('seriesnamecoded'), jQuery(this).data('seasonnum'), $epnum); return false;">Fetch info</a><br />
     $ epnum -= 1
     $if epnum == 0:
         $break
