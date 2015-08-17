@@ -15,16 +15,24 @@ $def with (nameserviceurl, count)
                 jQuery('#banner$count').html('<img src="' + data.data.banner + '" width="100%" />');
               }
               jQuery('#synopsislink$count').click(function() {
-                var content = '<div class="synopsis">' + (data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />') + '</div>';
+                var content = "";
                 if (data.data.fanart) {
-                    content = '<center><img src="' + data.data.fanart + '" width="70%" /></center><br /><br />' + content;
+                    content = '<center><img src="' + data.data.fanart + '" width="70%" /></center><br /><br />';
                 } else if (data.data.banner) {
-                    content = '<img src="' + data.data.banner + '" width="100%" /><br /><br />' + content;
+                    content = '<img src="' + data.data.banner + '" width="100%" /><br /><br />';
                 }
+                content += '<div class="synopsis">';
+                if (data.data.genre) {
+                    content += '<strong>Genre</strong>: ' + data.data.genre.split('|').slice(1,-1).join(',') + '<br />';
+                }
+                if (data.data.actors) {
+                    content += '<strong>Cast</strong>: ' + data.data.actors.split('|').slice(1,-1).join(',') + '<br />';
+                }
+                content += '<br />' + (data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />') + '</div>'
                 jQuery('#dialogdiv').html(content);
                 jQuery('#dialogdiv').dialog({
                     modal: true,
-                    title: "Synopsis",
+                    title: "Info",
                     width: 600,
                     position: {
                     my: "center top",
@@ -64,7 +72,7 @@ $def with (nameserviceurl, count)
               jQuery('#dialogdiv').html(content);
               jQuery('#dialogdiv').dialog({
                   modal: true,
-                  title: "Synopsis",
+                  title: "Info",
                   width: 600,
                   position: {
                   my: "center top",

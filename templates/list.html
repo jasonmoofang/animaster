@@ -14,11 +14,11 @@ $code:
 $if title in my_streams:
   $code:
     removeurl = "/removefavestream?" + urllib.urlencode({'title': title})
-  <p><a href="$removeurl">Remove from My Streams</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Synopsis</a></p>
+  <p><a href="$removeurl">Remove from My Streams</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Series Info</a></p>
 $else:
   $code:
     addurl = "/addfavestream?" + urllib.urlencode({'title': title})
-  <p><a href="$addurl">Add to My Streams</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Synopsis</a></p>
+  <p><a href="$addurl">Add to My Streams</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Series Info</a></p>
 
 $ epcount = 1
 $for ep in eps:

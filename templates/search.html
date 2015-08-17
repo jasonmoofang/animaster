@@ -22,7 +22,7 @@ $for i in tiles['my_shows']:
     nameserviceurl = "/nameservice/series?" + urllib.urlencode({'title': i['title']})
   <p><strong>$i['title']</strong>
   <div id="banner$count" class="banner"></div>
-  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Synopsis</a></p>
+  <a href="$removeurl">Remove from My Shows</a> | <a href="$searchurl">List</a> | <a href="#" onclick="return false;" title="loading..." id="synopsislink$count">Series Info</a></p>
   <ul>
   $for ep in i['episodes']:
     <li>Episode $ep['episode']
