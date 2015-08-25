@@ -28,6 +28,9 @@ $def with (nameserviceurl, count)
                 if (data.data.actors) {
                     content += '<strong>Cast</strong>: ' + data.data.actors.split('|').slice(1,-1).join(',') + '<br />';
                 }
+                if (data.studio) {
+                    content += '<strong>Production studio</strong>: ' + data.studio + '<br />';
+                }
                 content += '<br />' + (data.data.overview).replace(/(?:\r\n|\r|\n)/g, '<br />') + '</div>'
                 jQuery('#dialogdiv').html(content);
                 jQuery('#dialogdiv').dialog({

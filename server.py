@@ -3,7 +3,8 @@ import feedparser
 import json
 import subprocess
 from functions import *
-from tvdbmal import MalWrapper
+from mal import MalWrapper
+from ann import ANNWrapper
 try:
     import tvdb_api
 except:
@@ -106,6 +107,7 @@ class nameservice:
         t = tvdb_api.Tvdb()
         if endpoint == "series" and hasattr(param, 'title'):
             malwrapper = MalWrapper()
+            annwrapper = ANNWrapper()
             alts = malwrapper.get_other_titles(param.title)
             if alts == None:
                 return json.dumps({'status': 'notfound'})
@@ -113,7 +115,10 @@ class nameservice:
                 for title in alts:
                     try:
                         print "trying " + title
-                        return json.dumps({'status': 'ok', 'data': t[title].data, 'season': malwrapper.deduce_season(param.title, 1)})
+                        data = t[title].data
+                        season = malwrapper.deduce_season(param.title, 1)
+                        studio = annwrapper.get_production_studio(title)
+                        return json.dumps({'status': 'ok', 'data': data, 'season': season, 'studio': studio })
                     except (tvdb_api.tvdb_shownotfound, tvdb_api.tvdb_seasonnotfound, tvdb_api.tvdb_episodenotfound) as err: 
                         continue
                 return json.dumps({'status': 'notfound'})
