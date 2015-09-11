@@ -1,0 +1,4 @@
+This directory will be used by pyfscache. Move along.
+
+This file is only here so that this directory can be added to git, since git sucks
+and doesn't handle empty directories.
