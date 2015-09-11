@@ -10,6 +10,11 @@ try:
 except:
     print "The tvdb python module 1.6.2 needs to be installed. See https://github.com/dbr/tvdb_api"
     exit()
+try:
+    import pyfscache
+except:
+    print "pyfscache needs to be installed. See http://www.jamesstroud.com/software/pyfscache/"
+    exit()
 
 
 urls = (
@@ -29,6 +34,11 @@ urls = (
 
 partial_render = web.template.render('templates/partials')
 render = web.template.render('templates/', globals={'urllib': urllib, 'partial_render': partial_render}, base="layout")
+service_cache = pyfscache.FSCache('cache', days=30)
+
+def cache_renew(cache, key, data):
+    cache.expire(key)
+    cache[key] = data
 
 class index:
     def GET(self):
@@ -102,10 +112,17 @@ class play:
         return "<script> window.close(); </script>"
 
 class nameservice:
+    def __series_can_cache(self, data):
+        return data['data']['overview']
+    def __ep_can_cache(self, data):
+        return data['data']['overview']
     def GET(self, endpoint):
         param = web.input()
         t = tvdb_api.Tvdb()
         if endpoint == "series" and hasattr(param, 'title'):
+            if ('seriescache', [param.title]) in service_cache:
+                cache_renew(service_cache, ('seriescache', [param.title]), service_cache[('seriescache', [param.title])])
+                return json.dumps(service_cache[('seriescache', [param.title])])
             malwrapper = MalWrapper()
             annwrapper = ANNWrapper()
             alts = malwrapper.get_other_titles(param.title)
@@ -117,12 +134,24 @@ class nameservice:
                         print "trying " + title
                         data = t[title].data
                         season = malwrapper.deduce_season(param.title, 1)
-                        studio = annwrapper.get_production_studio(title)
-                        return json.dumps({'status': 'ok', 'data': data, 'season': season, 'studio': studio })
+                        studio = ""
+                        if ('studiocache', [param.title]) in service_cache:
+                            studio = service_cache[('studiocache', [param.title])]
+                        else:
+                            studio = annwrapper.get_production_studio(title)
+                            if studio:
+                                service_cache[('studiocache', [param.title])] = studio
+                        finaldata = {'status': 'ok', 'data': data, 'season': season, 'studio': studio }
+                        if self.__series_can_cache(finaldata):
+                            service_cache[('seriescache', [param.title])] = finaldata
+                        return json.dumps(finaldata)
                     except (tvdb_api.tvdb_shownotfound, tvdb_api.tvdb_seasonnotfound, tvdb_api.tvdb_episodenotfound) as err: 
                         continue
                 return json.dumps({'status': 'notfound'})
         elif endpoint == "episode" and hasattr(param, 'seriesname') and hasattr(param, 'seasonnum') and hasattr(param, 'epnum'):
+            if ('episodecache', [param.seriesname, param.seasonnum, param.epnum]) in service_cache:
+                cache_renew(service_cache, ('episodecache', [param.seriesname, param.seasonnum, param.epnum]), service_cache[('episodecache', [param.seriesname, param.seasonnum, param.epnum])])
+                return json.dumps(service_cache[('episodecache', [param.seriesname, param.seasonnum, param.epnum])])
             try:
                 curseason = int(param.seasonnum)
                 curep = int(param.epnum)
@@ -131,7 +160,10 @@ class nameservice:
                     curseason += 1
                     curep -= seasonepcount
                     seasonepcount = len(t[param.seriesname][curseason].keys())
-                return json.dumps({'status': 'ok', 'data': t[param.seriesname][curseason][curep] })
+                finaldata = {'status': 'ok', 'data': t[param.seriesname][curseason][curep] }
+                if self.__ep_can_cache(finaldata):
+                    service_cache[('episodecache', [param.seriesname, param.seasonnum, param.epnum])] = finaldata
+                return json.dumps(finaldata)
             except (tvdb_api.tvdb_shownotfound, tvdb_api.tvdb_seasonnotfound, tvdb_api.tvdb_episodenotfound) as err: 
                 return json.dumps({'status': 'notfound'})
         else:
