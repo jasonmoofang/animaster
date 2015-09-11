@@ -16,7 +16,7 @@ class MalWrapper:
         self.cur_query = ""
 
     def __raw_search_anime(self, query):
-        h = httplib2.Http("/tmp/httplib2")
+        h = httplib2.Http()
         resp, content = h.request(self.malapiurl + '/anime/search?q=' + urllib2.quote(query))
         print self.malapiurl + '/anime/search?q=' + urllib2.quote(query)
         if int(resp['status']) != 200:
@@ -24,7 +24,7 @@ class MalWrapper:
         return content
 
     def __raw_get_anime_details(self, anime_id):
-        h = httplib2.Http("/tmp/httplib2")
+        h = httplib2.Http()
         resp, content = h.request(self.malapiurl + '/anime/' + str(anime_id) + '?mine=0')
 
         if int(resp['status']) == 404:

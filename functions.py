@@ -9,6 +9,8 @@ def process_filename (name):
     title = name
     for ex in strip:
       title = re.sub(re.compile(ex), r'', title)
+    title = re.sub(r'_', r' ', title)
+    print title
     searchObj = re.match(r'(.*)\s?\-\s?([0-9]{2,3})[\s\-_](\[[0-9]{3,4}p\]).*', title)
     if searchObj:
       return {
@@ -17,6 +19,13 @@ def process_filename (name):
         'res': searchObj.group(3).strip()
       }
     else:
+      searchObj = re.match(r'(.*)\s?\-\s?([0-9]{2,3})[\s\-_].*', title)
+      if searchObj:
+        return {
+          'title': searchObj.group(1).strip(),
+          'episode': searchObj.group(2).strip(),
+          'res': "res unknown"
+        }
       return False
 
 def get_my_shows ():
@@ -120,6 +129,7 @@ def get_daisuki_tiles (my_streams):
     shows = json.loads(requests.get('http://www.daisuki.net/fastAPI/anime/search').text)
     tiles = { 'my_shows': [], 'other': [] }
     for show in shows['response']:
+        show['title'] = show['title'].encode('ascii', 'ignore').decode('ascii');
         if show['title'] in my_streams:
             show['episodes'] = get_daisuki_episodes(show['ad_id'])
             tiles['my_shows'].append(show)
@@ -146,7 +156,11 @@ def get_daisuki_episodes (ad_id):
 def get_files_from (folder):
     relevant_path = folder
     included_extenstions = ['mkv','avi','mp4','mpg' ] ;
-    file_names = [fn for fn in os.listdir(relevant_path) if any([fn.endswith(ext) for ext in included_extenstions])];
+    file_names = [] #[fn for fn in os.listdir(relevant_path) if any([fn.endswith(ext) for ext in included_extenstions])];
+    for root, dirs, files in os.walk(folder, followlinks=True):
+      for file in files:
+          if any([file.endswith(ext) for ext in included_extenstions]):
+              file_names.append(file)
     ret = []
     for f in file_names:
         info = process_filename(f)
