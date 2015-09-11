@@ -1,6 +1,7 @@
 import json
 import urllib2
 import difflib
+import re
 import xml.etree.ElementTree as ET
 try:
     import httplib2
@@ -15,7 +16,7 @@ class ANNWrapper:
         self.cur_query = ""
 
     def __raw_search_anime(self, query):
-        h = httplib2.Http("/tmp/httplib2")
+        h = httplib2.Http()
         resp, content = h.request(self.annapiurl + 'reports.xml?id=155&type=anime&search=' + urllib2.quote(query))
         print self.annapiurl + 'reports.xml?id=155&type=anime&search=' + urllib2.quote(query)
         if int(resp['status']) != 200:
@@ -23,7 +24,7 @@ class ANNWrapper:
         return content
 
     def __raw_get_anime_details(self, anime_id):
-        h = httplib2.Http("/tmp/httplib2")
+        h = httplib2.Http()
         resp, content = h.request(self.annapiurl + 'api.xml?anime=' + str(anime_id))
         print self.annapiurl + 'api.xml?anime=' + str(anime_id)
         if int(resp['status']) == 404:
@@ -77,10 +78,13 @@ class ANNWrapper:
                 newquery = newquery[4:]
             if (newquery2[0:4].lower() == "the "):
                 newquery2 = newquery2[4:]
+            if newquery == query:
+                newquery = re.sub(r'ou', r'o', newquery)
+                newquery2 = re.sub(r'ou', r'o', newquery2)
             if newquery != query:
                 attempt = self.get_ann_entry(newquery)
                 if attempt is None:
-                    return self.get_ann_entry(newquery2)
+                    attempt = self.get_ann_entry(newquery2)
                 else:
                     return attempt
         return details
